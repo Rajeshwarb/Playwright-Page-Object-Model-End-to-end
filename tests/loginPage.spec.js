@@ -22,6 +22,4 @@ test.describe('Login Page Tests', () => {
       await swagLabLoginPage.enterloginCredentials(row.UserId, row.Password);
     }
   });
-
-
 });

@@ -9,15 +9,12 @@ async function readExcel(filePath, sheetName) {
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(resolvedPath);
-
     const worksheet = workbook.getWorksheet(sheetName);
     if (!worksheet) {
         throw new Error(`Sheet "${sheetName}" not found in file: ${filePath}`);
     }
-
     const headers = [];
     worksheet.getRow(1).eachCell(cell => headers.push(cell.value));
-
     const records = [];
     worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) return; // Skip header
@@ -27,7 +24,6 @@ async function readExcel(filePath, sheetName) {
         });
         records.push(rowData);
     });
-
     return records;
 }
 

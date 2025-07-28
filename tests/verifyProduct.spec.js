@@ -21,7 +21,7 @@ test.describe('Login Page Tests', () => {
             await productsPage.verifyProductTitle();
         }
     });
-    test.only('verify Item Price sorting by changing dropdown list', async ({ page }) => {
+    test('verify Item Price sorting by changing dropdown list', async ({ page }) => {
         const swagLabLoginPage = new SwagLabLoginPage(page);
         const productsPage = new ProductsPage(page);
         for (const row of testData) {
@@ -32,7 +32,7 @@ test.describe('Login Page Tests', () => {
             await productsPage.verifyDropDownList();
         }
     });
-    test('verify Add to Cart details', async ({ page }) => {
+    test('verify Add to Cart Items count', async ({ page }) => {
         const swagLabLoginPage = new SwagLabLoginPage(page);
         const productsPage = new ProductsPage(page);
         for (const row of testData) {
@@ -40,7 +40,18 @@ test.describe('Login Page Tests', () => {
             console.log(`Navigating to URL: ${config.baseURL}`);
             await swagLabLoginPage.gotoPage(config.baseURL);
             await swagLabLoginPage.enterloginCredentials(row.UserId, row.Password);
-            await productsPage.addToCart();
+            await productsPage.verifyItemQuantityByaddToCart();
+        }
+    });
+    test.only('Calculate price of Items', async ({ page }) => {
+        const swagLabLoginPage = new SwagLabLoginPage(page);
+        const productsPage = new ProductsPage(page);
+        for (const row of testData) {
+            console.log(`Test data--->${row.UserId}, ${row.Password}`);
+            console.log(`Navigating to URL: ${config.baseURL}`);
+            await swagLabLoginPage.gotoPage(config.baseURL);
+            await swagLabLoginPage.enterloginCredentials(row.UserId, row.Password);
+            await productsPage.calculateAddCartPrice(2);
         }
     });
 

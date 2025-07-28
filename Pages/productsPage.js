@@ -1,5 +1,4 @@
-const {test, expect } = require("@playwright/test");
-
+import { test, expect } from "@playwright/test";
 class ProductsPage {
     constructor(page) {
         this.page = page;
@@ -12,6 +11,7 @@ class ProductsPage {
         this.listOfFirstItem = page.locator('//*[@id="inventory_container"]/div/div[1]/div[2]/div[2]/div')
         this.lowPriceFirstItem = page.getByText('Sauce Labs Onesie');
         this.highPriceFirstItem = page.getByText('Sauce Labs Fleece Jacket');
+        this.calNoOfItems = page.locator('//*[@id="cart_contents_container"]/div/div[1]/div[3]/div[2]/div[2]/div');
 
     }
 
@@ -67,12 +67,69 @@ class ProductsPage {
         }
     }
 
-    async addToCart() {
+    async verifyItemQuantityByaddToCart() {
+        let emptyCartCount = await this.emptyCartButton.textContent();
+        console.log(`Empty cart item count is: ${emptyCartCount}`);
+        await this.emptyCartButton.screenshot({ path: `screenshots/emptyCartCount.png` });
+        let cartItemCount1 = '';
+        if (await this.cartItemCount.isVisible()) {
+            console.log(`Empty cart item count`);
+        } else {
+            console.log(`Cart item count is empty`);
+        }
         const locator = await this.addToCartButton
         const count = await locator.count();
         console.log(`Number of Add to Cart buttons found: ${count}`);
-        // await this.addToCartButton.click();
+        for (let i = 0; i < count; i++) {
+            await this.addToCartButton.nth(i).click();
+            await this.page.waitForTimeout(1000);
+            if (await this.cartItemCount.isVisible()) {
+                cartItemCount1 = await this.cartItemCount.textContent();
+                console.log(`Cart item count after adding item ${i + 1} is: ${cartItemCount1}`);
+            } else {
+                console.log(`Cart item count is empty after adding item ${i + 1}`);
+            }
+        }
+        await this.addToCartButton.nth(0).click();
+        await this.page.waitForTimeout(1000);
+        if (await this.cartItemCount.isVisible()) {
+            cartItemCount1 = await this.cartItemCount.textContent();
+            console.log(`Cart item count after adding first item is: ${cartItemCount1}`);
+        } else {
+            console.log(`Cart item count is empty after adding first item`);
+        }
+        await this.addToCartButton.nth(1).click();
+        if (await this.cartItemCount.isVisible()) {
+            cartItemCount1 = await this.cartItemCount.textContent();
+            console.log(`Cart item count after adding first item is: ${cartItemCount1}`);
+        } else {
+            console.log(`Cart item count is empty after adding first item`);
+        }
     }
 
+    async calculateAddCartPrice(itemsCnt) {
+        let cartItemCount1 = '';
+        const locator = await this.addToCartButton
+        const count = await locator.count();
+        console.log(`Number of Add to Cart buttons found: ${count}, expected: ${itemsCnt}`);
+        if (count > itemsCnt) {
+            for (let i = 0; i < itemsCnt; i++) {
+                await this.addToCartButton.nth(i).click();
+                await this.page.waitForTimeout(1000);
+            }
+            await this.emptyCartButton.click();
+            await this.page.waitForTimeout(1000);
+            let totalPrice = 0;
+            for (let i = 3; i <= 3 + itemsCnt - 1; i++) {
+                let itemPrice = await this.page.locator('//*[@id="cart_contents_container"]/div/div[1]/div[' + i + ']/div[2]/div[2]/div').textContent();
+                console.log(`Price of item ${i}: ${itemPrice}`);
+                totalPrice += parseFloat(itemPrice.split('$')[1]);
+            }
+            console.log(`Total price of items in the cart: $${totalPrice}`);
+            await this.page.waitForTimeout(2000);
+
+        }
+
+    }
 }
 module.exports = { ProductsPage };

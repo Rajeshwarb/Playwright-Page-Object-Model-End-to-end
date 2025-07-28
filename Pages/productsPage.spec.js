@@ -132,4 +132,4 @@ class ProductsPage {
 
     }
 }
-export default { ProductsPage };
+module.exports = { ProductsPage };

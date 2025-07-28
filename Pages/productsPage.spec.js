@@ -126,9 +126,8 @@ class ProductsPage {
                 totalPrice += parseFloat(itemPrice.split('$')[1]);
             }
             console.log(`Total price of items in the cart: $${totalPrice}`);
-            await this.page.waitForTimeout(5000);
-            // let noOfItems = await this.calNoOfItems.count
-            // console.log(`No of items in the cart: ${noOfItems}`);
+            await this.page.waitForTimeout(2000);
+
         }
 
     }
